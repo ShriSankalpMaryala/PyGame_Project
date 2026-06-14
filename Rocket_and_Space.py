@@ -36,10 +36,10 @@ while run == True:
         rocket_x += 2
 
     if rocket_y < 0:
-        rocket_y = 0
-
-
+        rocket_y = 0  
     
+    if rocket_x < 0:
+        rocket_x = 0
 
             
             
