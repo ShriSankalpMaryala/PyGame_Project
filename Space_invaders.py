@@ -1,4 +1,5 @@
 import pygame
+pygame.init()
 TITLE = "Space Invaders"
 HEIGHT = 600
 WIDTH = 1000
@@ -8,6 +9,7 @@ bg1 = pygame.image.load("yellow_spaceship.png")
 bg2 = pygame.image.load("red_spaceship.png")
 bg3 = pygame.image.load("milky way.png")
 bg3 = pygame.transform.scale(bg3,(1000,600)) 
+
 
 
 
@@ -29,8 +31,39 @@ shipgroup.add(yellowship)
 shipgroup.add(redship)
 redbullets = []
 yellowbullets = []
+redhealth = 10
+yellowhealth = 10
 
 
+
+def handle_bullets():
+     global redbullets,redhealth,yellowbullets,yellowhealth
+     for bullet in redbullets:
+          pygame.draw.rect(screen,"red",bullet)
+          bullet.x += 1
+          if bullet.colliderect(yellowship.rect):
+               yellowhealth -= 1
+               redbullets.remove(bullet)
+
+
+     for bullet in yellowbullets:
+          pygame.draw.rect(screen,"yellow",bullet)
+          bullet.x -= 1
+          if bullet.colliderect(redship.rect):
+               redhealth -= 1
+               yellowbullets.remove(bullet)
+
+     font = pygame.font.SysFont("Arial",17)
+     text = font.render("Redhealth:" + str(redhealth),True,"white")
+     screen.blit(text,(0,0))
+     font = pygame.font.SysFont("Arial",17)
+     text = font.render("Yellowhealth:" + str(yellowhealth),True,"white")
+     screen.blit(text,(600,0))
+
+     
+
+
+     
 
 while True:
      screen.blit(bg3,(0,0))
@@ -43,6 +76,10 @@ while True:
                if event.key == pygame.K_e:
                     bullet = pygame.Rect(redship.rect.right,redship.rect.top+30,20,10)
                     redbullets.append(bullet)
+               if event.key == pygame.K_SPACE:
+                    bullet = pygame.Rect(yellowship.rect.left,yellowship.rect.top+30,20,10)
+                    yellowbullets.append(bullet)
+          
                     
 
 
@@ -88,9 +125,7 @@ while True:
           yellowship.rect.right = 1000
      
 
-
-    
-
+     handle_bullets()
 
 
 
