@@ -65,7 +65,7 @@ def handle_bullets():
 
      
 
-while True:
+while run:
      screen.blit(bg3,(0,0))
      shipgroup.draw(screen)
      pygame.draw.line(screen,"white",(500,0),(500,600))
@@ -79,7 +79,21 @@ while True:
                if event.key == pygame.K_SPACE:
                     bullet = pygame.Rect(yellowship.rect.left,yellowship.rect.top+30,20,10)
                     yellowbullets.append(bullet)
-          
+     if redhealth == 0:
+         font = pygame.font.SysFont("Arial",35)
+         text = font.render("Yellowship wins",True,"yellow")
+         screen.blit(text,(300,300))
+         pygame.display.update()
+         pygame.time.delay(3000)
+         run = False
+     if yellowhealth == 0:
+          font = pygame.font.SysFont("Arial",35)
+          text = font.render("Redship wins",True,"red")
+          screen.blit(text,(300,300))    
+          pygame.display.update()
+          pygame.time.delay(3000)    
+          run = False 
+
                     
 
 
