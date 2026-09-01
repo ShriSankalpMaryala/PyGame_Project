@@ -1,4 +1,5 @@
 import pygame
+pygame.init()
 TITLE = "Flappy Bird game"
 WIDTH = 800
 HEIGHT = 700
@@ -32,16 +33,25 @@ class Flappybird(pygame.sprite.Sprite):
         if self.vy < 5:
             self.vy += 0.05
         self.rect.y += self.vy
-        if pygame.mouse.get_pressed()[0]:
-            self.vy = -3
-
+        if pygame.mouse.get_pressed()[0]and gameover == False:
+            self.vy = -1
+gameover = False
 class Obstacle(pygame.sprite.Sprite):
-    def __init__(self,image,x,y):
+    def __init__(self,image,x,y,flag):
         super().__init__()
         self.image = image
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
+        if flag == 20:
+            self.image = pygame.transform.flip(self.image,False,True)
+            self.rect = self.image.get_rect()
+            self.rect.x = x
+            self.rect.bottom = y
+        if flag == 40:
+            self.rect = self.image.get_rect()
+            self.rect.x = x
+            self.rect.y = y
+
+
+       
     def update(self):
         self.rect.x -= 1
         if self.rect.x < -50:
@@ -60,24 +70,32 @@ birdgroup.add(bird)
 
 
 groundx = 0
-pipefrequency = 5000
-lastpipe = pygame.time.get_ticks() - pipefrequency
+pipefrequency = 3000
+lastpipe = 0
 while run == True:
     screen.blit(bg,(0,0))
     birdgroup.draw(screen)
     pipegroup.draw(screen)
     bird.update()
     timenow = pygame.time.get_ticks()
+    print(timenow)
     if timenow - lastpipe > pipefrequency:
+    
 
-        pipe = Obstacle(o,800,450)
+        pipe = Obstacle(o,800,450,40)
+        pipe2 = Obstacle(o,800,250,20)
         pipegroup.add(pipe)
+        pipegroup.add(pipe2)
         lastpipe = timenow
+        print(timenow)
     screen.blit(g,(groundx,600))
     pipegroup.update()
     groundx -= 1
     if groundx < -100:
         groundx = 0
+    if len(pipegroup)>0:
+        if pygame.sprite.groupcollide(birdgroup,pipegroup,False,False):
+            gameover = True
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
