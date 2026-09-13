@@ -23,18 +23,19 @@ class Flappybird(pygame.sprite.Sprite):
         self.counter = 0
         self.vy = 0
     def update(self):
-        self.counter += 1
-        if self.counter > 10:
-            self.counter = 0
-            self.index += 1
-            if self.index > 2:
-                self.index = 0
-            self.image = self.images[self.index]
-        if self.vy < 5:
-            self.vy += 0.05
-        self.rect.y += self.vy
-        if pygame.mouse.get_pressed()[0]and gameover == False:
-            self.vy = -1
+        if gameover == False:
+            self.counter += 1
+            if self.counter > 10:
+                self.counter = 0
+                self.index += 1
+                if self.index > 2:
+                    self.index = 0
+                self.image = self.images[self.index]
+            if self.vy < 5:
+                self.vy += 0.05
+            self.rect.y += self.vy
+            if pygame.mouse.get_pressed()[0]and gameover == False:
+                self.vy = -1
 gameover = False
 class Obstacle(pygame.sprite.Sprite):
     def __init__(self,image,x,y,flag):
@@ -53,7 +54,10 @@ class Obstacle(pygame.sprite.Sprite):
 
        
     def update(self):
+        global score
         self.rect.x -= 1
+        if self.rect.x == 100:
+            score += 0.5
         if self.rect.x < -50:
             self.kill()
 
@@ -72,14 +76,24 @@ birdgroup.add(bird)
 groundx = 0
 pipefrequency = 3000
 lastpipe = 0
+score = 0
 while run == True:
     screen.blit(bg,(0,0))
     birdgroup.draw(screen)
     pipegroup.draw(screen)
     bird.update()
+    font = pygame.font.SysFont("Arial",20)
+    text = font.render("Score:" + str(score),True,"Blue")
+    screen.blit(text,(0,0))
+    if pygame.sprite.groupcollide(birdgroup,pipegroup,False,False):
+        gameover = True
     timenow = pygame.time.get_ticks()
     print(timenow)
-    if timenow - lastpipe > pipefrequency:
+    if gameover == True:
+        font = pygame.font.SysFont("Arial",50)
+        text = font.render("Game Over",True,"Red")
+        screen.blit(text,(300,400))
+    if timenow - lastpipe > pipefrequency and gameover == False:
     
 
         pipe = Obstacle(o,800,450,40)
@@ -89,8 +103,9 @@ while run == True:
         lastpipe = timenow
         print(timenow)
     screen.blit(g,(groundx,600))
-    pipegroup.update()
-    groundx -= 1
+    if gameover == False:
+        pipegroup.update()
+        groundx -= 1
     if groundx < -100:
         groundx = 0
     if len(pipegroup)>0:
